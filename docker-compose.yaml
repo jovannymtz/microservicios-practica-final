@@ -1,0 +1,60 @@
+version: '3.3'
+services:
+  discovery-server:
+    image: gruposalinas1/aplication-discovery-service:0.0.1-SNAPSHOT
+    environment:
+      - POSTGRES_PORT=8761
+    ports:
+      - 8761:8761
+  postgres:
+    build: servicesData/postgresdb/
+    environment:
+      - POSTGRES_PASSWORD= adminrs
+    ports:
+      - 5432:5432
+    volumes:
+      - './postgres_data:/var/lib/postgresql/data'
+    user: root:root
+  monitor-admin:
+    image: gruposalinas1/arquitectura-monitor-service:0.0.1-SNAPSHOT
+    ports:
+      - 8090:8090
+  api-perfiles:
+    image: gruposalinas1/api-red-social-perfil:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/bd_perfiles
+      - SPRING_DATASOURCE_USERNAME=adminrs
+      - SPRING_DATASOURCE_PASSWORD=adminrs
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_BOOT_ADMIN_CLIENT_URL=http://monitor-admin:8090
+    ports:
+      - 8081:8081
+    depends_on:
+      - postgres
+      - discovery-server
+  api-publicaciones:
+    image: gruposalinas1/api-red-social-publicacion:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/bd_publicaciones
+      - SPRING_DATASOURCE_USERNAME=adminrs
+      - SPRING_DATASOURCE_PASSWORD=adminrs
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_BOOT_ADMIN_CLIENT_URL=http://monitor-admin:8090
+    ports:
+      - 8082:8082
+    depends_on:
+      - postgres
+      - discovery-server
+  api-solicitud-amistad:
+    image: gruposalinas1/api-solicitud-amistad:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/bd_solicitud_amistad
+      - SPRING_DATASOURCE_USERNAME=adminrs
+      - SPRING_DATASOURCE_PASSWORD=adminrs
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_BOOT_ADMIN_CLIENT_URL=http://monitor-admin:8090
+    ports:
+      - 8083:8083
+    depends_on:
+      - postgres
+      - discovery-server

@@ -1,0 +1,7 @@
+CREATE TABLE solicitud_amistad (
+  id VARCHAR(255) PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  estatus BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+	
